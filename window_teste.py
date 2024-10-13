@@ -12,8 +12,14 @@ def mostrar_tela_inicial():
 def mostrar_tela_entrada():
     limpar_botoes()
 
-    botao_cliente.grid()
-    botao_bike.grid()
+    cliente = cliente_campo.grid(row=0, column=0)
+    bike = bike_campo.grid(row=1, column=0)
+
+
+    botao_cliente.grid(row=0, column=1)
+    botao_bike.grid(row=1,column=1)
+    botao_registrar.grid(row=2, column=1)
+    botao_cancelar.grid(row=3, column=1)
 
 
 def mostrar_tela_cadastro():
@@ -21,7 +27,8 @@ def mostrar_tela_cadastro():
     limpar_botoes()
 
     # Mostra widgets da tela de cadastro
-    botao_cadastrar.grid(row=0, column=3)
+    botao_cadastrar_cliente.grid(row=8, column=3)
+    botao_cancelar_entrada_bike.grid(row=9, column=3)
 
     label_nome_campo.grid(row=1, column=0)
     label_rg_campo.grid(row=2, column=0)
@@ -43,28 +50,42 @@ def mostrar_tela_cadastro():
 
 def mostrar_tela_bike():
     limpar_botoes()
-    botao_cadastrar_bike.grid()
+    botao_cadastrar_bike.grid(row=5, column=3)
+    botao_cancelar_entrada_bike.grid(row=6, column=3)
 
-    cliente = cliente_campo.grid()
-    aro = aro_campo.grid()
-    condicao = condicao_campo.grid()
-    status = status_campo.grid()
+    label_idcliente_campo.grid(row=1, column=0)
+    label_aro_campo.grid(row=2, column=0)
+    label_cor_campo.grid(row=3, column=0)
+    label_condicao_campo.grid(row=4, column=0)
+
+
+    cliente = cliente_campo.grid(row=1, column=2)
+    aro = aro_campo.grid(row=2, column=2)
+    cor = cor_campo.grid(row=3, column=2)
+    condicao = condicao_campo.grid(row=4, column=2)
+
 
 
 
 def mostrar_tela_retirada():
     limpar_botoes()
 
+    submeter = submeter_retirada_campo.grid()
+
     botao_submeter_retirada.grid()
+    botao_cancelar.grid()
 
 def limpar_botoes():
     botao_entrada.grid_forget()
     botao_retirada.grid_forget()
     botao_submeter_retirada.grid_forget()
     botao_cliente.grid_forget()
-    botao_cadastrar.grid_forget()
+    botao_cadastrar_cliente.grid_forget()
     botao_bike.grid_forget()
     botao_cadastrar_bike.grid_forget()
+    botao_cancelar.grid_forget()
+    botao_cancelar_entrada_bike.grid_forget()
+    botao_registrar.grid_forget()
     nome_campo.grid_forget()
     rg_campo.grid_forget()
     cpf_campo.grid_forget()
@@ -75,7 +96,8 @@ def limpar_botoes():
     aro_campo.grid_forget()
     cliente_campo.grid_forget()
     condicao_campo.grid_forget()
-    status_campo.grid_forget()
+    idcliente_campo.grid_forget()
+    cor_campo.grid_forget()
     label_nome_campo.grid_forget()
     label_rg_campo.grid_forget()
     label_cpf_campo.grid_forget()
@@ -86,13 +108,20 @@ def limpar_botoes():
     label_aro_campo.grid_forget()
     label_cliente_campo.grid_forget()
     label_condicao_campo.grid_forget()
-    label_status_campo.grid_forget()
+    label_cor_campo.grid_forget()
+    label_idcliente_campo.grid_forget()
+    bike_campo.grid_forget()
+    submeter_retirada_campo.grid_forget()
 
 
 # Cria a janela principal
 janela = tk.Tk()
 janela.title("Bicicletário Techbit")
 janela.geometry("600x400")
+#janela.grid(sticky="nsew")
+#janela.rowconfigure(0, weight=1)
+#janela.columnconfigure(0, weight=1)
+#janela.columnconfigure(1, weight=1)
 
 
 # Widgets da tela de login (inicialmente visíveis)
@@ -107,8 +136,11 @@ botao_retirada.grid()
 botao_cliente = tk.Button(janela, text="Cliente", command=mostrar_tela_cadastro)
 botao_bike = tk.Button(janela, text="Bike", command=mostrar_tela_bike)
 botao_submeter_retirada = tk.Button(janela, text="Submeter retirada", command=mostrar_tela_inicial)
-botao_cadastrar = tk.Button(janela, text="Cadastrar", command=mostrar_tela_inicial)
-botao_cadastrar_bike = tk.Button(janela, text="Cadastrar", command=mostrar_tela_inicial)
+botao_cadastrar_cliente = tk.Button(janela, text="Cadastrar", command=mostrar_tela_entrada)
+botao_cadastrar_bike = tk.Button(janela, text="Cadastrar", command=mostrar_tela_entrada)
+botao_cancelar = tk.Button(janela, text="Cancelar", command=mostrar_tela_inicial)
+botao_cancelar_entrada_bike = tk.Button(janela, text="Cancelar", command=mostrar_tela_entrada)
+botao_registrar = tk.Button(janela, text="Registrar", command=mostrar_tela_inicial)
 
 
 # Label nomeia os campos de entrada "Entry"
@@ -120,9 +152,11 @@ label_telefone_campo = tk.Label(janela, text="Telefone:")
 label_email_campo = tk.Label(janela, text="Email:")
 label_endereco_campo = tk.Label(janela, text="Endereço:")
 label_cliente_campo = tk.Label(janela, text="Cliente")
+label_idcliente_campo = tk.Label(janela, text="ID Cliente")
 label_aro_campo = tk.Label(janela, text="Aro")
+label_cor_campo = tk.Label(janela, text="Cor")
 label_condicao_campo = tk.Label(janela, text="Condições")
-label_status_campo = tk.Label(janela, text="Status")
+
 
 
 # Campos de entrada (inputs)
@@ -136,6 +170,9 @@ endereco_campo = Entry(janela)
 cliente_campo = Entry(janela)
 aro_campo = Entry(janela)
 condicao_campo = Entry(janela)
-status_campo = Entry(janela)
+idcliente_campo = Entry(janela)
+bike_campo = Entry(janela)
+cor_campo = Entry(janela)
+submeter_retirada_campo = Entry(janela)
 
 janela.mainloop()
