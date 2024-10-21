@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import *
 
+import ConexaoTCP as server
+
 def mostrar_tela_inicial():
     # ... Esconde widgets da tela de cadastro ...
     limpar_botoes()
@@ -9,7 +11,20 @@ def mostrar_tela_inicial():
     botao_entrada.grid()
     botao_retirada.grid()
 
+def cadastrar_cliente():
+    ## cadastrar
+    name = str(nome_campo.get())
+    server.request_insert_client(name,
+                                 cpf_campo.get(),
+                                 rg_campo.get(),
+                                 email_campo.get(),
+                                 telefone_campo.get(),
+                                 endereco_campo.get(),
+                                 data_nascimento_campo.get())
+
 def mostrar_tela_entrada():
+    cadastrar_cliente()
+    ## retornar
     limpar_botoes()
 
     cliente = cliente_campo.grid(row=0, column=0)
@@ -136,7 +151,7 @@ botao_retirada.grid()
 botao_cliente = tk.Button(janela, text="Cliente", command=mostrar_tela_cadastro)
 botao_bike = tk.Button(janela, text="Bike", command=mostrar_tela_bike)
 botao_submeter_retirada = tk.Button(janela, text="Submeter retirada", command=mostrar_tela_inicial)
-botao_cadastrar_cliente = tk.Button(janela, text="Cadastrar", command=mostrar_tela_entrada)
+botao_cadastrar_cliente = tk.Button(janela, text="Cadastrar Cliente", command=mostrar_tela_entrada)
 botao_cadastrar_bike = tk.Button(janela, text="Cadastrar", command=mostrar_tela_entrada)
 botao_cancelar = tk.Button(janela, text="Cancelar", command=mostrar_tela_inicial)
 botao_cancelar_entrada_bike = tk.Button(janela, text="Cancelar", command=mostrar_tela_entrada)

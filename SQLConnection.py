@@ -1,6 +1,5 @@
 import pyodbc
 
-
 sqlserver_conncetion = (
     "Driver={SQL Server};"
     r"Server=DESKTOP-GC4CVEH\SQLEXPRESS;"
@@ -247,7 +246,4 @@ def update_movement(id_movement):
 
 #for item in lista:
 #    print(item)
-
-
-
 
