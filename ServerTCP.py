@@ -4,7 +4,7 @@ import json
 import SQLConnection as sql
 
 # Criação do socket
-HOST = '192.168.0.106'  # Endereço IP do servidor
+HOST = 'DESKTOP-GC4CVEH'  # Endereço IP do servidor
 PORT = 65432        # Porta
 
 
@@ -60,13 +60,15 @@ def read_json(data):
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind((HOST, PORT))
     s.listen()
-    conn, addr = s.accept()
-    with conn:
-        print('Conectado por', addr)
-        while True:
-            data = conn.recv(1024)
-            if data:
-                print('dados recebidos')
-                dados_recebidos = json.loads(data.decode())
-                print(dados_recebidos)
-                read_json(dados_recebidos)
+    while True:
+        conn, addr = s.accept()
+        with conn:
+            print('Conectado por', addr)
+            while True:
+                data = conn.recv(1024)
+                if data:
+                    print('dados recebidos')
+                    dados_recebidos = json.loads(data.decode())
+                    print(dados_recebidos)
+                    read_json(dados_recebidos)
+                    break

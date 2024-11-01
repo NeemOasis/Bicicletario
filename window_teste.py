@@ -22,8 +22,28 @@ def cadastrar_cliente():
                                  endereco_campo.get(),
                                  data_nascimento_campo.get())
 
+    limpar_entry()
+    mostrar_tela_entrada()
+
+def cadastrar_bike():
+    cliente = str(cliente_campo.get())
+    server.request_insert_bike(aro_campo.get(),
+        condicao_campo.get(),
+        cliente_campo.get(),
+        cor_campo.get())
+
+    limpar_entry()
+    mostrar_tela_entrada()
+
+
+def registrar_movimentacao():
+    server.request_insert_movement(bike_campo.get())
+
+    limpar_entry()
+    mostrar_tela_inicial()
+
+
 def mostrar_tela_entrada():
-    cadastrar_cliente()
     ## retornar
     limpar_botoes()
 
@@ -79,6 +99,9 @@ def mostrar_tela_bike():
     cor = cor_campo.grid(row=3, column=2)
     condicao = condicao_campo.grid(row=4, column=2)
 
+    limpar_entry()
+
+
 
 
 
@@ -89,6 +112,9 @@ def mostrar_tela_retirada():
 
     botao_submeter_retirada.grid()
     botao_cancelar.grid()
+
+    limpar_entry()
+
 
 def limpar_botoes():
     botao_entrada.grid_forget()
@@ -128,6 +154,23 @@ def limpar_botoes():
     bike_campo.grid_forget()
     submeter_retirada_campo.grid_forget()
 
+def limpar_entry():
+    nome_campo.delete(0, tk.END)
+    rg_campo.delete(0, tk.END)
+    cpf_campo.delete(0, tk.END)
+    data_nascimento_campo.delete(0, tk.END)
+    telefone_campo.delete(0, tk.END)
+    email_campo.delete(0, tk.END)
+    endereco_campo.delete(0, tk.END)
+    cliente_campo.delete(0, tk.END)
+    aro_campo.delete(0, tk.END)
+    condicao_campo.delete(0, tk.END)
+    idcliente_campo.delete(0, tk.END)
+    bike_campo.delete(0, tk.END)
+    cor_campo.delete(0, tk.END)
+    submeter_retirada_campo.delete(0, tk.END)
+
+
 
 # Cria a janela principal
 janela = tk.Tk()
@@ -151,11 +194,11 @@ botao_retirada.grid()
 botao_cliente = tk.Button(janela, text="Cliente", command=mostrar_tela_cadastro)
 botao_bike = tk.Button(janela, text="Bike", command=mostrar_tela_bike)
 botao_submeter_retirada = tk.Button(janela, text="Submeter retirada", command=mostrar_tela_inicial)
-botao_cadastrar_cliente = tk.Button(janela, text="Cadastrar Cliente", command=mostrar_tela_entrada)
-botao_cadastrar_bike = tk.Button(janela, text="Cadastrar", command=mostrar_tela_entrada)
+botao_cadastrar_cliente = tk.Button(janela, text="Cadastrar Cliente", command=cadastrar_cliente)
+botao_cadastrar_bike = tk.Button(janela, text="Cadastrar", command=cadastrar_bike)
 botao_cancelar = tk.Button(janela, text="Cancelar", command=mostrar_tela_inicial)
 botao_cancelar_entrada_bike = tk.Button(janela, text="Cancelar", command=mostrar_tela_entrada)
-botao_registrar = tk.Button(janela, text="Registrar", command=mostrar_tela_inicial)
+botao_registrar = tk.Button(janela, text="Registrar", command=registrar_movimentacao)
 
 
 # Label nomeia os campos de entrada "Entry"
@@ -189,5 +232,6 @@ idcliente_campo = Entry(janela)
 bike_campo = Entry(janela)
 cor_campo = Entry(janela)
 submeter_retirada_campo = Entry(janela)
+
 
 janela.mainloop()

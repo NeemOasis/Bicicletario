@@ -2,7 +2,7 @@ import socket
 import json
 
 # Configurações do cliente
-HOST = '192.168.0.106'  # Endereço IP do servidor
+HOST = 'DESKTOP-GC4CVEH'  # Endereço IP do servidor
 PORT = 65432        # Porta
 
 def send_to_server(dados):
