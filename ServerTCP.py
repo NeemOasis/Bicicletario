@@ -31,6 +31,11 @@ def read_json(data):
 
         sql.update_client(cpf, name, email, telephone, address)
 
+    elif action == "select_client_by_cpf":
+        cpf = data["data"]["cpf"] or None
+
+        return sql.select_client(f"cpf = '{cpf}'")
+
     elif action == "insert_bike":
         rim = data["data"]["rim"] or None
         condition = data["data"]["condition"] or None
@@ -46,6 +51,16 @@ def read_json(data):
 
         sql.update_bike(id_bike, condition, status)
 
+    elif action == "select_bike_by_id":
+        id = data["data"]["id"] or None
+
+        return sql.select_bike(f"id_bike = '{id}'")
+    
+    elif action == "select_bikes_by_client":
+        cpf = data["data"]["cpf"] or None
+
+        return sql.select_bike(f"id_cliente = '{cpf}'")
+
     elif action == "insert_movement":
         id_bike = data["data"]["id_bike"] or None
 
@@ -55,6 +70,16 @@ def read_json(data):
         id_movement = data["data"]["id_movement"] or None
 
         sql.update_movement(id_movement)
+
+    elif action == "select_movement_by_id":
+        id = data["data"]["id_movement"] or None
+
+        return sql.select_movement(f"id_movimentacao = '{id}'")
+    
+    elif action == "select_movements_by_bike":
+        id = data["data"]["id_bike"] or None
+
+        return sql.select_movement(f"id_bike = '{id}'")
 
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
