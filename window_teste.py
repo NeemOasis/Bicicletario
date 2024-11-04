@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import *
+from tkinter import ttk
 
 import ConexaoTCP as server
 
@@ -10,6 +11,7 @@ def mostrar_tela_inicial():
     # Mostra widgets da tela de login
     botao_entrada.grid()
     botao_retirada.grid()
+    
 
 def cadastrar_cliente():
     ## cadastrar
@@ -43,19 +45,70 @@ def registrar_movimentacao():
     mostrar_tela_inicial()
 
 
+def client_search_database(event):
+    label_bike_info.config(text="")
+    label_nome.config(text="")
+
+    info = cliente_combo.get()
+    results = server.request_select_client(info)
+    results = eval(results)
+
+    valores_combobox = [result[2] for result in results]
+    cliente_combo['values'] = valores_combobox
+
+def bike_search_database():
+    cpf = cliente_combo.get()
+    results = server.request_select_bike_by_client(cpf)
+    results = results.replace('Decimal', '')
+    results = eval(results)
+
+    valores_combobox = [result[0] for result in results]
+    bike_combo['values'] = valores_combobox
+
+def select_client_combo(event):
+    label_bike_info.config(text="")
+    info = cliente_combo.get()
+    results = server.request_select_client(info)
+    results = eval(results)
+    cliente = results[0]
+
+    label_nome.config(text=f"nome do cliente: {cliente[0]}")
+
+    bike_search_database()
+
+def select_bike_combo(event):
+    info = bike_combo.get()
+
+    results = server.request_select_bike(info)
+    results = results.replace('Decimal', '')
+    results = eval(results)
+    bike = results[0]
+
+    label_bike_info.config(text=f"aro: {bike[1]}, condicao: {bike[2]}, status: {bike[4]}")
+
 def mostrar_tela_entrada():
     ## retornar
     limpar_botoes()
 
-    cliente = cliente_campo.grid(row=0, column=0)
-    bike = bike_campo.grid(row=1, column=0)
+    #cliente = cliente_campo.grid(row=0, column=0)
+    cliente_combo.grid(row=0, column=0)
+    bike_combo.grid(row=1, column=0)
+
+    label_nome.grid(row=0, column=3)
+    label_bike_info.grid(row=1, column=3)
+
+    # busca no banco
+    cliente_combo.bind('<KeyRelease>', client_search_database)
+    cliente_combo.bind("<<ComboboxSelected>>", select_client_combo)
+    bike_combo.bind("<<ComboboxSelected>>", select_bike_combo)
 
 
     botao_cliente.grid(row=0, column=1)
     botao_bike.grid(row=1,column=1)
     botao_registrar.grid(row=2, column=1)
-    botao_cancelar.grid(row=3, column=1)
-
+    botao_editar_cliente.grid(row=3, column=1)
+    botao_editar_bike.grid(row=4, column=1)
+    botao_cancelar.grid(row=5, column=1)
 
 def mostrar_tela_cadastro():
     # ... Esconde widgets da tela de login ...
@@ -74,13 +127,13 @@ def mostrar_tela_cadastro():
     label_endereco_campo.grid(row=7, column=0)
 
 
-    nome = nome_campo.grid(row=1, column=1)
-    rg = rg_campo.grid(row=2, column=1)
-    cpf = cpf_campo.grid(row=3, column=1)
-    data_nascimento = data_nascimento_campo.grid(row=4, column=1)
-    telefone = telefone_campo.grid(row=5, column=1)
-    email = email_campo.grid(row=6, column=1)
-    endereco = endereco_campo.grid(row=7, column=1)
+    nome_campo.grid(row=1, column=1)
+    rg_campo.grid(row=2, column=1)
+    cpf_campo.grid(row=3, column=1)
+    data_nascimento_campo.grid(row=4, column=1)
+    telefone_campo.grid(row=5, column=1)
+    email_campo.grid(row=6, column=1)
+    endereco_campo.grid(row=7, column=1)
 
 
 def mostrar_tela_bike():
@@ -94,16 +147,12 @@ def mostrar_tela_bike():
     label_condicao_campo.grid(row=4, column=0)
 
 
-    cliente = cliente_campo.grid(row=1, column=2)
-    aro = aro_campo.grid(row=2, column=2)
-    cor = cor_campo.grid(row=3, column=2)
-    condicao = condicao_campo.grid(row=4, column=2)
+    cliente_campo.grid(row=1, column=2)
+    aro_campo.grid(row=2, column=2)
+    cor_campo.grid(row=3, column=2)
+    condicao_campo.grid(row=4, column=2)
 
     limpar_entry()
-
-
-
-
 
 def mostrar_tela_retirada():
     limpar_botoes()
@@ -115,6 +164,85 @@ def mostrar_tela_retirada():
 
     limpar_entry()
 
+def mostrar_tela_editar_cliente(cliente):
+    limpar_botoes()
+
+    label_nome_campo.grid(row=1, column=0)
+    label_rg_campo.grid(row=2, column=0)
+    label_cpf_campo.grid(row=3, column=0)
+    label_data_nascimento_campo.grid(row=4, column=0)
+    label_telefone_campo.grid(row=5, column=0)
+    label_email_campo.grid(row=6, column=0)
+    label_endereco_campo.grid(row=7, column=0)
+
+    nome_campo.grid(row=1, column=1)
+    rg_campo.grid(row=2, column=1)
+    cpf_campo.grid(row=3, column=1)
+    data_nascimento_campo.grid(row=4, column=1)
+    telefone_campo.grid(row=5, column=1)
+    email_campo.grid(row=6, column=1)
+    endereco_campo.grid(row=7, column=1)
+
+    limpar_entry()
+
+    if cliente is not None:
+        nome_campo.insert(0, cliente[0])
+        rg_campo.insert(0, cliente[1])
+        cpf_campo.insert(0, cliente[2])
+        data_nascimento_campo.insert(0, cliente[3])
+        telefone_campo.insert(0, cliente[4])
+        email_campo.insert(0, cliente[5])
+        endereco_campo.insert(0, cliente[6])
+
+    botao_cancelar_entrada_bike.grid(row=6, column=3)
+
+
+def mostrar_tela_editar_bike(bike):
+    limpar_botoes()
+
+    label_idcliente_campo.grid(row=1, column=0)
+    label_aro_campo.grid(row=2, column=0)
+    label_cor_campo.grid(row=3, column=0)
+    label_condicao_campo.grid(row=4, column=0)
+
+    cliente_campo.grid(row=1, column=2)
+    aro_campo.grid(row=2, column=2)
+    cor_campo.grid(row=3, column=2)
+    condicao_campo.grid(row=4, column=2)
+
+    limpar_entry()
+
+    if bike is not None:
+        cliente_campo.insert(0, bike[3])
+        aro_campo.insert(0, bike[1])
+        cor_campo.insert(0, bike[4])
+        condicao_campo.insert(0, bike[2])
+
+    botao_cancelar_entrada_bike.grid(row=6, column=3)
+
+def editar_cliente():
+    info = cliente_combo.get()
+    results = server.request_select_client(info)
+    results = eval(results)
+    cliente = results[0]
+
+    mostrar_tela_editar_cliente(cliente)
+    
+def editar_bike():
+    info = bike_combo.get()
+
+    results = server.request_select_bike(info)
+    results = results.replace('Decimal', '')
+    results = eval(results)
+    bike = results[0]
+
+    mostrar_tela_editar_bike(bike)
+
+def update_cliente():
+    pass
+
+def update_bike():
+    pass
 
 def limpar_botoes():
     botao_entrada.grid_forget()
@@ -127,6 +255,8 @@ def limpar_botoes():
     botao_cancelar.grid_forget()
     botao_cancelar_entrada_bike.grid_forget()
     botao_registrar.grid_forget()
+    botao_deletar_user.grid_forget()
+    botao_deletar_bike.grid_forget()
     nome_campo.grid_forget()
     rg_campo.grid_forget()
     cpf_campo.grid_forget()
@@ -151,8 +281,14 @@ def limpar_botoes():
     label_condicao_campo.grid_forget()
     label_cor_campo.grid_forget()
     label_idcliente_campo.grid_forget()
+    label_nome.grid_forget()
     bike_campo.grid_forget()
     submeter_retirada_campo.grid_forget()
+    cliente_combo.grid_forget()
+    bike_combo.grid_forget()
+    label_bike_info.grid_forget()
+    botao_editar_bike.grid_forget()
+    botao_editar_cliente.grid_forget()
 
 def limpar_entry():
     nome_campo.delete(0, tk.END)
@@ -189,11 +325,18 @@ botao_entrada.grid()
 botao_retirada = tk.Button(janela, text="Retirada de bike", command=mostrar_tela_retirada)
 botao_retirada.grid()
 
+botao_deletar_user = tk.Button(janela, text="Deletar usuário", command=mostrar_tela_inicial)
+botao_deletar_bike = tk.Button(janela, text="Deletar bike", command=mostrar_tela_inicial)
+
 
 # Widgets da tela de cadastro (inicialmente ocultos)
-botao_cliente = tk.Button(janela, text="Cliente", command=mostrar_tela_cadastro)
-botao_bike = tk.Button(janela, text="Bike", command=mostrar_tela_bike)
-botao_submeter_retirada = tk.Button(janela, text="Submeter retirada", command=mostrar_tela_inicial)
+botao_cliente = tk.Button(janela, text="Novo Cliente", command=mostrar_tela_cadastro)
+botao_bike = tk.Button(janela, text="Nova Bike", command=mostrar_tela_bike)
+botao_editar_cliente = tk.Button(janela, text="Editar Cliente", command=editar_cliente)
+botao_editar_bike = tk.Button(janela, text="Editar Bike", command=editar_bike)
+botao_update_cliente = tk.Button(janela, text="Atualizar Cadastro do Cliente", command=update_cliente)
+botao_update_bike = tk.Button(janela, text="Atualizar Cadastro da Bike", command=update_bike)
+botao_submeter_retirada = tk.Button(janela, text="Submeter Retirada", command=mostrar_tela_inicial)
 botao_cadastrar_cliente = tk.Button(janela, text="Cadastrar Cliente", command=cadastrar_cliente)
 botao_cadastrar_bike = tk.Button(janela, text="Cadastrar", command=cadastrar_bike)
 botao_cancelar = tk.Button(janela, text="Cancelar", command=mostrar_tela_inicial)
@@ -214,6 +357,8 @@ label_idcliente_campo = tk.Label(janela, text="ID Cliente")
 label_aro_campo = tk.Label(janela, text="Aro")
 label_cor_campo = tk.Label(janela, text="Cor")
 label_condicao_campo = tk.Label(janela, text="Condições")
+label_nome = tk.Label(janela, text="")
+label_bike_info = tk.Label(janela, text="")
 
 
 
@@ -232,6 +377,10 @@ idcliente_campo = Entry(janela)
 bike_campo = Entry(janela)
 cor_campo = Entry(janela)
 submeter_retirada_campo = Entry(janela)
+
+# Campo combobox (retorno)
+cliente_combo = ttk.Combobox(janela)
+bike_combo = ttk.Combobox(janela)
 
 
 janela.mainloop()
