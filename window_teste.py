@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
+import re
 
 import ConexaoTCP as server
 
@@ -26,6 +28,8 @@ def cadastrar_cliente():
 
     limpar_entry()
     mostrar_tela_entrada()
+    messagebox.showinfo("Cadastro", "Cliente cadastrado com sucesso!")
+
 
 def cadastrar_bike():
     cliente = str(cliente_campo.get())
@@ -36,13 +40,15 @@ def cadastrar_bike():
 
     limpar_entry()
     mostrar_tela_entrada()
-
+    messagebox.showinfo("Cadastro", "Bike cadastrado com sucesso!")
+    
 
 def registrar_movimentacao():
     server.request_insert_movement(bike_campo.get())
 
     limpar_entry()
     mostrar_tela_inicial()
+    messagebox.showinfo("Movimentação", "Movimentação registrada com sucesso!")
 
 
 def client_search_database(event):
@@ -108,7 +114,8 @@ def mostrar_tela_entrada():
     botao_registrar.grid(row=2, column=1)
     botao_editar_cliente.grid(row=3, column=1)
     botao_editar_bike.grid(row=4, column=1)
-    botao_cancelar.grid(row=5, column=1)
+    #botao_deletar_user.grid(row=5, column=1)
+    botao_cancelar.grid(row=6, column=1)
 
 def mostrar_tela_cadastro():
     # ... Esconde widgets da tela de login ...
@@ -121,6 +128,8 @@ def mostrar_tela_cadastro():
     label_nome_campo.grid(row=1, column=0)
     label_rg_campo.grid(row=2, column=0)
     label_cpf_campo.grid(row=3, column=0)
+    #vcmd = (janela.register(on_validate), '%P')
+    #data_nascimento_campo.config(validate='key', validatecommand=vcmd)
     label_data_nascimento_campo.grid(row=4, column=0)
     label_telefone_campo.grid(row=5, column=0)
     label_email_campo.grid(row=6, column=0)
@@ -163,6 +172,7 @@ def mostrar_tela_retirada():
     botao_cancelar.grid()
 
     limpar_entry()
+    
 
 def mostrar_tela_editar_cliente(cliente):
     limpar_botoes()
@@ -244,6 +254,18 @@ def update_cliente():
 def update_bike():
     pass
 
+def validar_data(data):
+    padrao = re.compile(r"^\d{2}/\d{2}/\d{4}$")
+    return padrao.match(data) is not None
+
+def on_validate(P):
+    if validar_data(P):
+        return True
+    elif P == "":
+        return True
+    else:
+        return False
+
 def limpar_botoes():
     botao_entrada.grid_forget()
     botao_retirada.grid_forget()
@@ -255,8 +277,8 @@ def limpar_botoes():
     botao_cancelar.grid_forget()
     botao_cancelar_entrada_bike.grid_forget()
     botao_registrar.grid_forget()
-    botao_deletar_user.grid_forget()
-    botao_deletar_bike.grid_forget()
+    #botao_deletar_user.grid_forget()
+    #botao_deletar_bike.grid_forget()
     nome_campo.grid_forget()
     rg_campo.grid_forget()
     cpf_campo.grid_forget()
@@ -306,16 +328,21 @@ def limpar_entry():
     cor_campo.delete(0, tk.END)
     submeter_retirada_campo.delete(0, tk.END)
 
-
+def centralizar_janela(janela):
+    janela.update_idletasks()
+    largura_janela = janela.winfo_width()
+    altura_janela = janela.winfo_height()
+    largura_tela = janela.winfo_screenwidth()
+    altura_tela = janela.winfo_screenheight()
+    pos_x = (largura_tela // 2) - (largura_janela // 2)
+    pos_y = (altura_tela // 2) - (altura_janela // 2)
+    janela.geometry(f'{largura_janela}x{altura_janela}+{pos_x}+{pos_y}')
 
 # Cria a janela principal
 janela = tk.Tk()
 janela.title("Bicicletário Techbit")
 janela.geometry("600x400")
-#janela.grid(sticky="nsew")
-#janela.rowconfigure(0, weight=1)
-#janela.columnconfigure(0, weight=1)
-#janela.columnconfigure(1, weight=1)
+centralizar_janela(janela)
 
 
 # Widgets da tela de login (inicialmente visíveis)
@@ -325,8 +352,8 @@ botao_entrada.grid()
 botao_retirada = tk.Button(janela, text="Retirada de bike", command=mostrar_tela_retirada)
 botao_retirada.grid()
 
-botao_deletar_user = tk.Button(janela, text="Deletar usuário", command=mostrar_tela_inicial)
-botao_deletar_bike = tk.Button(janela, text="Deletar bike", command=mostrar_tela_inicial)
+#botao_deletar_user = tk.Button(janela, text="Deletar usuário", command=deletar_user)
+#botao_deletar_bike = tk.Button(janela, text="Deletar bike", command=mostrar_tela_inicial)
 
 
 # Widgets da tela de cadastro (inicialmente ocultos)

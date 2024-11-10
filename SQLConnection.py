@@ -223,6 +223,24 @@ def update_movement(id_movement):
         print("Erro ao atualizar dados:", ex)
 
 
+def deletar_user():
+    try:
+        connection = pyodbc.connect(sqlserver_conncetion)     
+        cursor = connection.cursor()
+
+        sql_delete = "DELETE FROM dbo.Cliente WHERE CPF = ?"
+        
+        cursor.execute(sql_delete, (cpf,))
+        connection.commit()
+
+        cursor.close()
+        connection.close()
+
+        print("Registro deletado com sucesso!")
+    except pyodbc.Error as ex:
+        print("Erro", f"Erro ao deletar registro:", ex)
+
+
 
 #insert_client("Walber", "397308218", "222333666", "walberzinhogatinho@yahoo.com.br", "1198902456",
               ##"Rua Alexandre de Morais, 69", "1997-06-07")
