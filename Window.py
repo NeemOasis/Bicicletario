@@ -195,15 +195,18 @@ def mostrar_tela_editar_cliente(cliente):
 
     limpar_entry()
 
+    print(cliente)
+
     if cliente is not None:
         nome_campo.insert(0, cliente[0])
         rg_campo.insert(0, cliente[1])
         cpf_campo.insert(0, cliente[2])
-        data_nascimento_campo.insert(0, cliente[3])
+        email_campo.insert(0, cliente[3])
         telefone_campo.insert(0, cliente[4])
-        email_campo.insert(0, cliente[5])
-        endereco_campo.insert(0, cliente[6])
+        endereco_campo.insert(0, cliente[5])
+        data_nascimento_campo.insert(0, cliente[6])
 
+    botao_update_cliente.grid(row=5, column=3)
     botao_cancelar_entrada_bike.grid(row=6, column=3)
 
 
@@ -249,7 +252,16 @@ def editar_bike():
     mostrar_tela_editar_bike(bike)
 
 def update_cliente():
-    pass
+    server.request_update_client(nome_campo.get(),
+                                 email_campo.get(),
+                                 telefone_campo.get(),
+                                 endereco_campo.get(),
+                                 cpf_campo.get())
+
+    limpar_entry()
+    mostrar_tela_entrada()
+    messagebox.showinfo("Atualizado", "Cliente atualizado com sucesso!")
+
 
 def update_bike():
     pass
