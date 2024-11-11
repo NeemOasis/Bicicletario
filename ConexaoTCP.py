@@ -14,6 +14,22 @@ def send_to_server(dados):
 
         s.sendall(data)
 
+def send_server_and_receive(dados):
+       with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((HOST, PORT))
+
+        # Dados a serem enviados
+        data = json.dumps(dados).encode()
+
+        s.sendall(data)
+
+        data = s.recv(1024)
+
+        while data:
+            #print('Dados recebidos do servidor:', data.decode('utf-8'))
+            data = data.decode('utf-8')
+            return data
+
 def request_insert_client(name, cpf, rg, email, tel, street, date):
     dados = {
                 "action": "insert_client",
@@ -67,6 +83,18 @@ def request_update_client(name, email, tel, street, cpf):
 
         send_to_server(dados)
 
+
+def request_select_client(cpf):
+        dados = {
+                     "action": "select_client_by_cpf",
+                     "data": {
+                         "cpf": cpf
+                     }
+                 }
+
+        return send_server_and_receive(dados) 
+
+
 def request_update_bike(condition, status, id_bike):
         dados = {
                      "action": "update_bike",
@@ -88,3 +116,23 @@ def request_update_movement(id_movement):
                  }
 
         send_to_server(dados)
+
+def request_select_bike(id):
+      dados = {
+            "action": "select_bike_by_id",
+            "data": {
+                  "id": id
+            }
+      }
+
+      return send_server_and_receive(dados) 
+
+def request_select_bike_by_client(cpf):
+    dados = {
+                    "action": "select_bikes_by_client",
+                    "data": {
+                          "cpf": cpf
+                    }
+              }
+    return send_server_and_receive(dados) 
+      
