@@ -5,7 +5,7 @@ import SQLConnection as sql
 
 # Criação do socket
 HOST = 'DESKTOP-GC4CVEH'  # Endereço IP do servidor
-PORT = 65432        # Porta
+PORT = 65432       # Porta
 
 
 def read_json(data):
@@ -15,7 +15,7 @@ def read_json(data):
         name = data["data"]["name"] or None
         cpf = data["data"]["cpf"] or None
         rg = data["data"]["rg"] or None
-        email = data["data"]["name"] or None
+        email = data["data"]["email"] or None
         telephone = data["data"]["tel"] or None
         address = data["data"]["street"] or None
         date = data["data"]["date"] or None
