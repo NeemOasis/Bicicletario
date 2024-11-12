@@ -276,6 +276,15 @@ def update_bike():
     mostrar_tela_entrada()
     messagebox.showinfo("Atualizada", "Bicicleta atualizado com sucesso!")
 
+
+def delete_client():
+    pass
+
+
+def delete_bike():
+    pass
+
+
 def validar_data(data):
     padrao = re.compile(r"^\d{2}/\d{2}/\d{4}$")
     return padrao.match(data) is not None
@@ -301,6 +310,8 @@ def limpar_botoes():
     botao_registrar.grid_forget()
     #botao_deletar_user.grid_forget()
     #botao_deletar_bike.grid_forget()
+    botao_deletar_cliente.grid_forget()
+    botao_deletar_bike.grid_forget()
     nome_campo.grid_forget()
     rg_campo.grid_forget()
     cpf_campo.grid_forget()
@@ -386,6 +397,8 @@ botao_editar_cliente = tk.Button(janela, text="Editar Cliente", command=editar_c
 botao_editar_bike = tk.Button(janela, text="Editar Bike", command=editar_bike)
 botao_update_cliente = tk.Button(janela, text="Atualizar Cadastro do Cliente", command=update_cliente)
 botao_update_bike = tk.Button(janela, text="Atualizar Cadastro da Bike", command=update_bike)
+botao_deletar_cliente = tk.Button(janela, text="Deletar Cliente Selecionado", command=delete_client)
+botao_deletar_bike = tk.Button(janela, text="Deletar Bike Selecionada", command=delete_bike)
 botao_submeter_retirada = tk.Button(janela, text="Submeter Retirada", command=mostrar_tela_inicial)
 botao_cadastrar_cliente = tk.Button(janela, text="Cadastrar Cliente", command=cadastrar_cliente)
 botao_cadastrar_bike = tk.Button(janela, text="Cadastrar", command=cadastrar_bike)
