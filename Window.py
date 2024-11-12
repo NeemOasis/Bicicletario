@@ -213,11 +213,13 @@ def mostrar_tela_editar_cliente(cliente):
 def mostrar_tela_editar_bike(bike):
     limpar_botoes()
 
+    label_idbike_campo.grid(row=0, column=0)
     label_idcliente_campo.grid(row=1, column=0)
     label_aro_campo.grid(row=2, column=0)
     label_cor_campo.grid(row=3, column=0)
     label_condicao_campo.grid(row=4, column=0)
 
+    idbike_campo.grid(row=0, column=0)
     cliente_campo.grid(row=1, column=2)
     aro_campo.grid(row=2, column=2)
     cor_campo.grid(row=3, column=2)
@@ -226,11 +228,13 @@ def mostrar_tela_editar_bike(bike):
     limpar_entry()
 
     if bike is not None:
-        cliente_campo.insert(0, bike[3])
-        aro_campo.insert(0, bike[1])
-        cor_campo.insert(0, bike[4])
-        condicao_campo.insert(0, bike[2])
+        idbike_campo.insert(0, bike[0])
+        cliente_campo.insert(0, bike[1])
+        aro_campo.insert(0, bike[2])
+        cor_campo.insert(0, bike[3])
+        condicao_campo.insert(0, bike[4])
 
+    botao_update_bike.grid(row=5, column=3)
     botao_cancelar_entrada_bike.grid(row=6, column=3)
 
 def editar_cliente():
@@ -252,11 +256,9 @@ def editar_bike():
     mostrar_tela_editar_bike(bike)
 
 def update_cliente():
-    server.request_update_client(nome_campo.get(),
-                                 email_campo.get(),
-                                 telefone_campo.get(),
-                                 endereco_campo.get(),
-                                 cpf_campo.get())
+    server.request_update_client(condicao_campo.get(),
+                                 cor_campo.get(),
+                                 idbike_campo.get())
 
     limpar_entry()
     mostrar_tela_entrada()
@@ -264,7 +266,15 @@ def update_cliente():
 
 
 def update_bike():
-    pass
+    server.request_update_bike(nome_campo.get(),
+                                 email_campo.get(),
+                                 telefone_campo.get(),
+                                 endereco_campo.get(),
+                                 cpf_campo.get())
+
+    limpar_entry()
+    mostrar_tela_entrada()
+    messagebox.showinfo("Atualizada", "Bicicleta atualizado com sucesso!")
 
 def validar_data(data):
     padrao = re.compile(r"^\d{2}/\d{2}/\d{4}$")
@@ -323,6 +333,7 @@ def limpar_botoes():
     label_bike_info.grid_forget()
     botao_editar_bike.grid_forget()
     botao_editar_cliente.grid_forget()
+    idbike_campo.grid_forget()
 
 def limpar_entry():
     nome_campo.delete(0, tk.END)
@@ -393,6 +404,7 @@ label_email_campo = tk.Label(janela, text="Email:")
 label_endereco_campo = tk.Label(janela, text="Endereço:")
 label_cliente_campo = tk.Label(janela, text="Cliente")
 label_idcliente_campo = tk.Label(janela, text="ID Cliente")
+label_idbike_campo = tk.Label(janela, text="ID Bike")
 label_aro_campo = tk.Label(janela, text="Aro")
 label_cor_campo = tk.Label(janela, text="Cor")
 label_condicao_campo = tk.Label(janela, text="Condições")
@@ -413,6 +425,7 @@ cliente_campo = Entry(janela)
 aro_campo = Entry(janela)
 condicao_campo = Entry(janela)
 idcliente_campo = Entry(janela)
+idbike_campo = Entry(janela)
 bike_campo = Entry(janela)
 cor_campo = Entry(janela)
 submeter_retirada_campo = Entry(janela)
