@@ -229,9 +229,10 @@ def update_movement(id_movement):
 #         cursor = connection.cursor()
 
 #         sql_delete = "DELETE FROM dbo.Cliente WHERE CPF = ?"
-        
+    
 #         cursor.execute(sql_delete, (cpf,))
 #         connection.commit()
+
 
 #         cursor.close()
 #         connection.close()

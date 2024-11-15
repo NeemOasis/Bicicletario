@@ -192,14 +192,16 @@ def mostrar_tela_editar_cliente(cliente):
 
     limpar_entry()
 
+    print(cliente)
+
     if cliente is not None:
         nome_campo.insert(0, cliente[0])
         rg_campo.insert(0, cliente[1])
         cpf_campo.insert(0, cliente[2])
-        data_nascimento_campo.insert(0, cliente[3])
+        email_campo.insert(0, cliente[3])
         telefone_campo.insert(0, cliente[4])
-        email_campo.insert(0, cliente[5])
-        endereco_campo.insert(0, cliente[6])
+        endereco_campo.insert(0, cliente[5])
+        data_nascimento_campo.insert(0, cliente[6])
 
     botao_update_cliente.grid(row=8, column=3)
     botao_cancelar_entrada_bike.grid(row=9, column=3)
@@ -208,11 +210,13 @@ def mostrar_tela_editar_cliente(cliente):
 def mostrar_tela_editar_bike(bike):
     limpar_botoes()
 
+    label_idbike_campo.grid(row=0, column=0)
     label_idcliente_campo.grid(row=1, column=0)
     label_aro_campo.grid(row=2, column=0)
     label_cor_campo.grid(row=3, column=0)
     label_condicao_campo.grid(row=4, column=0)
 
+    idbike_campo.grid(row=0, column=0)
     cliente_campo.grid(row=1, column=2)
     aro_campo.grid(row=2, column=2)
     cor_campo.grid(row=3, column=2)
@@ -221,11 +225,13 @@ def mostrar_tela_editar_bike(bike):
     limpar_entry()
 
     if bike is not None:
-        cliente_campo.insert(0, bike[3])
-        aro_campo.insert(0, bike[1])
-        cor_campo.insert(0, bike[4])
-        condicao_campo.insert(0, bike[2])
+        idbike_campo.insert(0, bike[0])
+        cliente_campo.insert(0, bike[1])
+        aro_campo.insert(0, bike[2])
+        cor_campo.insert(0, bike[3])
+        condicao_campo.insert(0, bike[4])
 
+    botao_update_bike.grid(row=5, column=3)
     botao_cancelar_entrada_bike.grid(row=6, column=3)
 
 def editar_cliente():
@@ -247,14 +253,41 @@ def editar_bike():
     mostrar_tela_editar_bike(bike)
 
 def update_cliente():
-    pass
+    server.request_update_client(condicao_campo.get(),
+                                 cor_campo.get(),
+                                 idbike_campo.get())
+
+    limpar_entry()
+    mostrar_tela_entrada()
+    messagebox.showinfo("Atualizado", "Cliente atualizado com sucesso!")
+
 
 def update_bike():
+    server.request_update_bike(nome_campo.get(),
+                                 email_campo.get(),
+                                 telefone_campo.get(),
+                                 endereco_campo.get(),
+                                 cpf_campo.get())
+
+    limpar_entry()
+    mostrar_tela_entrada()
+    messagebox.showinfo("Atualizada", "Bicicleta atualizado com sucesso!")
+
+
+def delete_client():
     pass
+
+
+def delete_bike():
+    pass
+
 
 # def validar_data(data):
 #     padrao = re.compile(r"^\d{2}/\d{2}/\d{4}$")
 #     return padrao.match(data) is not None
+
+
+
 
 # def on_validate(P):
 #     if validar_data(P):
@@ -279,6 +312,8 @@ def limpar_botoes():
     botao_update_bike.grid_forget()
     #botao_deletar_user.grid_forget()
     #botao_deletar_bike.grid_forget()
+    botao_deletar_cliente.grid_forget()
+    botao_deletar_bike.grid_forget()
     nome_campo.grid_forget()
     rg_campo.grid_forget()
     cpf_campo.grid_forget()
@@ -309,7 +344,10 @@ def limpar_botoes():
     cliente_combo.grid_forget()
     bike_combo.grid_forget()
     label_bike_info.grid_forget()
-    
+    botao_editar_bike.grid_forget()
+    botao_editar_cliente.grid_forget()
+    idbike_campo.grid_forget()
+
 
 def limpar_entry():
     nome_campo.delete(0, tk.END)
@@ -362,6 +400,8 @@ botao_editar_cliente = tk.Button(janela, text="Editar Cliente", command=editar_c
 botao_editar_bike = tk.Button(janela, text="Editar Bike", command=editar_bike)
 botao_update_cliente = tk.Button(janela, text="Atualizar Cadastro do Cliente", command=update_cliente)
 botao_update_bike = tk.Button(janela, text="Atualizar Cadastro da Bike", command=update_bike)
+botao_deletar_cliente = tk.Button(janela, text="Deletar Cliente Selecionado", command=delete_client)
+botao_deletar_bike = tk.Button(janela, text="Deletar Bike Selecionada", command=delete_bike)
 botao_submeter_retirada = tk.Button(janela, text="Submeter Retirada", command=mostrar_tela_inicial)
 botao_cadastrar_cliente = tk.Button(janela, text="Cadastrar Cliente", command=cadastrar_cliente)
 botao_cadastrar_bike = tk.Button(janela, text="Cadastrar", command=cadastrar_bike)
@@ -381,6 +421,7 @@ label_email_campo = tk.Label(janela, text="Email:")
 label_endereco_campo = tk.Label(janela, text="Endereço:")
 label_cliente_campo = tk.Label(janela, text="Cliente")
 label_idcliente_campo = tk.Label(janela, text="ID Cliente")
+label_idbike_campo = tk.Label(janela, text="ID Bike")
 label_aro_campo = tk.Label(janela, text="Aro")
 label_cor_campo = tk.Label(janela, text="Cor")
 label_condicao_campo = tk.Label(janela, text="Condições")
@@ -401,6 +442,7 @@ cliente_campo = Entry(janela)
 aro_campo = Entry(janela)
 condicao_campo = Entry(janela)
 idcliente_campo = Entry(janela)
+idbike_campo = Entry(janela)
 bike_campo = Entry(janela)
 cor_campo = Entry(janela)
 submeter_retirada_campo = Entry(janela)
