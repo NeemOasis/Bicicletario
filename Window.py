@@ -1,8 +1,11 @@
 import tkinter as tk
+import json
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import re
+from datetime import datetime
+from resources.bike import BikeStatus
+from resources.client import Client
 
 import ConexaoTCP as server
 
@@ -32,11 +35,10 @@ def cadastrar_cliente():
 
 
 def cadastrar_bike():
-    cliente = str(cliente_campo.get())
     server.request_insert_bike(aro_campo.get(),
         condicao_campo.get(),
         cliente_campo.get(),
-        cor_campo.get())
+        BikeStatus.INSERT.value)
 
     limpar_entry()
     mostrar_tela_entrada()
@@ -44,11 +46,22 @@ def cadastrar_bike():
     
 
 def registrar_movimentacao():
-    server.request_insert_movement(bike_campo.get())
+    info = bike_combo.get()
 
-    limpar_entry()
-    mostrar_tela_inicial()
-    messagebox.showinfo("Movimentação", "Movimentação registrada com sucesso!")
+    bikes = server.request_select_bike(info)
+    bike = bikes[0]
+
+    if bike.status_bike == BikeStatus.NOT_VALID.value:
+        messagebox.showerror("Movimentação", "Não é possível fazer registro de movimentação, bike foi revogada do sistema")
+    elif bike.status_bike == BikeStatus.ENTRY.value:
+        messagebox.showerror("Movimentação", "Não é possível fazer registro de movimentação, bike já tem uma entrada registrada")
+    else:
+        server.request_insert_movement(bike.id_bike)
+        server.request_update_bike(bike.condicao, BikeStatus.ENTRY.value, bike.id_bike)
+
+        limpar_entry()
+        mostrar_tela_inicial()
+        messagebox.showinfo("Movimentação", f"Movimentação registrada com sucesso!")
 
 
 def client_search_database(event):
@@ -56,41 +69,35 @@ def client_search_database(event):
     label_nome.config(text="")
 
     info = cliente_combo.get()
-    results = server.request_select_client(info)
-    results = eval(results)
+    clientes = server.request_select_client(info)
 
-    valores_combobox = [result[2] for result in results]
+    valores_combobox = [cliente.cpf for cliente in clientes]
     cliente_combo['values'] = valores_combobox
 
 def bike_search_database():
     cpf = cliente_combo.get()
-    results = server.request_select_bike_by_client(cpf)
-    results = results.replace('Decimal', '')
-    results = eval(results)
+    bikes = server.request_select_bike_by_client(cpf)
 
-    valores_combobox = [result[0] for result in results]
+    valores_combobox = [bike.id_bike for bike in bikes]
     bike_combo['values'] = valores_combobox
 
 def select_client_combo(event):
     label_bike_info.config(text="")
     info = cliente_combo.get()
-    results = server.request_select_client(info)
-    results = eval(results)
-    cliente = results[0]
+    clientes = server.request_select_client(info)
+    cliente = clientes[0]
 
-    label_nome.config(text=f"nome do cliente: {cliente[0]}")
+    label_nome.config(text=f"nome do cliente: {cliente.nome}")
 
     bike_search_database()
 
 def select_bike_combo(event):
     info = bike_combo.get()
 
-    results = server.request_select_bike(info)
-    results = results.replace('Decimal', '')
-    results = eval(results)
-    bike = results[0]
+    bikes = server.request_select_bike(info)
+    bike = bikes[0]
 
-    label_bike_info.config(text=f"aro: {bike[1]}, condicao: {bike[2]}, status: {bike[4]}")
+    label_bike_info.config(text=f"aro: {bike.aro}, condicao: {bike.condicao}, status: {bike.status_bike}")
 
 def mostrar_tela_entrada():
     ## retornar
@@ -163,12 +170,59 @@ def mostrar_tela_bike():
 def mostrar_tela_retirada():
     limpar_botoes()
 
-    submeter = submeter_retirada_campo.grid()
+    submeter_retirada_campo.grid()
+    label_movimentacao_info.grid()
 
+    botao_procurar_movimentacao.grid()
     botao_submeter_retirada.grid()
     botao_cancelar.grid()
 
     limpar_entry()
+
+
+def procurar_movimentacao():
+    movements = server.request_select_movement_by_id(submeter_retirada_campo.get())
+    movement = movements[0]
+
+    bikes = server.request_select_bike(movement.id_bike)
+    bike = bikes[0]
+
+    clientes = server.request_select_client(bike.id_cliente)
+    cliente = clientes[0]
+
+    label_movimentacao_info.config(text=f"bike id: {bike.id_bike}, bike status: {bike.status_bike}, bike condicao: {bike.condicao}, cliente cpf: {cliente.cpf}, cliente nome: {cliente.nome}")
+
+
+def submeter_retirada():
+    movements = server.request_select_movement_by_id(submeter_retirada_campo.get())
+    movement = movements[0]
+
+    bikes = server.request_select_bike(movement.id_bike)
+    bike = bikes[0]
+
+    if bike.status_bike == BikeStatus.NOT_VALID.value:
+        messagebox.showerror("Submeter Retirada", "Não é possível fazer retira, pois bika consta como removida do sistema")
+    elif bike.status_bike == BikeStatus.REMOVAL.value:
+        messagebox.showerror("Submeter Retirada", "Não é possível fazer retirada, bike já consta como retirado")
+    else:
+        server.request_update_movement(submeter_retirada_campo.get())
+        server.request_update_bike(bike.condicao, BikeStatus.REMOVAL.value, bike.id_bike)
+
+        movements = server.request_select_movement_by_id(submeter_retirada_campo.get())
+        movement = movements[0]
+
+        formato = "%Y-%m-%d %H:%M:%S.%f"
+        entrada = datetime.strptime(movement.data_entrada, formato)
+        saida = datetime.strptime(movement.data_saida, formato)
+
+        diferenca = saida - entrada
+        minutos = diferenca.total_seconds() / 60
+
+        messagebox.showinfo("Resultado final", f"bike retirada: {bike.id_bike}, minutos utilizados: {minutos:.0f}")
+
+        limpar_entry()
+        mostrar_tela_inicial()
+        messagebox.showinfo("Retirada de Bike", "Retirada registrada com sucesso")
     
 
 def mostrar_tela_editar_cliente(cliente):
@@ -236,19 +290,16 @@ def mostrar_tela_editar_bike(bike):
 
 def editar_cliente():
     info = cliente_combo.get()
-    results = server.request_select_client(info)
-    results = eval(results)
-    cliente = results[0]
+    clientes = server.request_select_client(info)
+    cliente = clientes[0]
 
     mostrar_tela_editar_cliente(cliente)
     
 def editar_bike():
     info = bike_combo.get()
 
-    results = server.request_select_bike(info)
-    results = results.replace('Decimal', '')
-    results = eval(results)
-    bike = results[0]
+    bikes = server.request_select_bike(info)
+    bike = bikes[0]
 
     mostrar_tela_editar_bike(bike)
 
@@ -273,13 +324,6 @@ def update_bike():
     mostrar_tela_entrada()
     messagebox.showinfo("Atualizada", "Bicicleta atualizado com sucesso!")
 
-
-def delete_client():
-    pass
-
-
-def delete_bike():
-    pass
 
 
 # def validar_data(data):
@@ -310,10 +354,6 @@ def limpar_botoes():
     botao_registrar.grid_forget()
     botao_update_cliente.grid_forget()
     botao_update_bike.grid_forget()
-    #botao_deletar_user.grid_forget()
-    #botao_deletar_bike.grid_forget()
-    botao_deletar_cliente.grid_forget()
-    botao_deletar_bike.grid_forget()
     nome_campo.grid_forget()
     rg_campo.grid_forget()
     cpf_campo.grid_forget()
@@ -400,14 +440,13 @@ botao_editar_cliente = tk.Button(janela, text="Editar Cliente", command=editar_c
 botao_editar_bike = tk.Button(janela, text="Editar Bike", command=editar_bike)
 botao_update_cliente = tk.Button(janela, text="Atualizar Cadastro do Cliente", command=update_cliente)
 botao_update_bike = tk.Button(janela, text="Atualizar Cadastro da Bike", command=update_bike)
-botao_deletar_cliente = tk.Button(janela, text="Deletar Cliente Selecionado", command=delete_client)
-botao_deletar_bike = tk.Button(janela, text="Deletar Bike Selecionada", command=delete_bike)
-botao_submeter_retirada = tk.Button(janela, text="Submeter Retirada", command=mostrar_tela_inicial)
+botao_submeter_retirada = tk.Button(janela, text="Submeter Retirada", command=submeter_retirada)
 botao_cadastrar_cliente = tk.Button(janela, text="Cadastrar Cliente", command=cadastrar_cliente)
 botao_cadastrar_bike = tk.Button(janela, text="Cadastrar", command=cadastrar_bike)
 botao_cancelar = tk.Button(janela, text="Cancelar", command=mostrar_tela_inicial)
 botao_cancelar_entrada_bike = tk.Button(janela, text="Cancelar", command=mostrar_tela_entrada)
-botao_registrar = tk.Button(janela, text="Registrar", command=registrar_movimentacao)
+botao_registrar = tk.Button(janela, text="Registrar Movimentação", command=registrar_movimentacao)
+botao_procurar_movimentacao = tk.Button(janela, text="Procurar movimentação", command=procurar_movimentacao)
 
 
 
@@ -427,6 +466,7 @@ label_cor_campo = tk.Label(janela, text="Cor")
 label_condicao_campo = tk.Label(janela, text="Condições")
 label_nome = tk.Label(janela, text="")
 label_bike_info = tk.Label(janela, text="")
+label_movimentacao_info = tk.Label(janela, text="")
 
 
 
