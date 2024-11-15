@@ -249,13 +249,13 @@ def mostrar_tela_editar_cliente(cliente):
     print(cliente)
 
     if cliente is not None:
-        nome_campo.insert(0, cliente[0])
-        rg_campo.insert(0, cliente[1])
-        cpf_campo.insert(0, cliente[2])
-        email_campo.insert(0, cliente[3])
-        telefone_campo.insert(0, cliente[4])
-        endereco_campo.insert(0, cliente[5])
-        data_nascimento_campo.insert(0, cliente[6])
+        nome_campo.insert(0, cliente.nome)
+        rg_campo.insert(0, cliente.rg)
+        cpf_campo.insert(0, cliente.cpf)
+        email_campo.insert(0, cliente.email)
+        telefone_campo.insert(0, cliente.telefone)
+        endereco_campo.insert(0, cliente.endereco)
+        data_nascimento_campo.insert(0, cliente.data_nascimento)
 
     botao_update_cliente.grid(row=8, column=3)
     botao_cancelar_entrada_bike.grid(row=9, column=3)
@@ -279,14 +279,15 @@ def mostrar_tela_editar_bike(bike):
     limpar_entry()
 
     if bike is not None:
-        idbike_campo.insert(0, bike[0])
-        cliente_campo.insert(0, bike[1])
-        aro_campo.insert(0, bike[2])
-        cor_campo.insert(0, bike[3])
-        condicao_campo.insert(0, bike[4])
+        idbike_campo.insert(0, bike.id_bike)
+        cliente_campo.insert(0, bike.id_cliente)
+        aro_campo.insert(0, bike.aro)
+        cor_campo.insert(0, bike.status_bike)
+        condicao_campo.insert(0, bike.condicao)
 
     botao_update_bike.grid(row=5, column=3)
-    botao_cancelar_entrada_bike.grid(row=6, column=3)
+    botao_deletar_bike.grid(row=6, column=3)
+    botao_cancelar_entrada_bike.grid(row=7, column=3)
 
 def editar_cliente():
     info = cliente_combo.get()
@@ -304,17 +305,7 @@ def editar_bike():
     mostrar_tela_editar_bike(bike)
 
 def update_cliente():
-    server.request_update_client(condicao_campo.get(),
-                                 cor_campo.get(),
-                                 idbike_campo.get())
-
-    limpar_entry()
-    mostrar_tela_entrada()
-    messagebox.showinfo("Atualizado", "Cliente atualizado com sucesso!")
-
-
-def update_bike():
-    server.request_update_bike(nome_campo.get(),
+    server.request_update_client(nome_campo.get(),
                                  email_campo.get(),
                                  telefone_campo.get(),
                                  endereco_campo.get(),
@@ -322,7 +313,26 @@ def update_bike():
 
     limpar_entry()
     mostrar_tela_entrada()
+    messagebox.showinfo("Atualizado", "Cliente atualizado com sucesso!")
+
+
+def update_bike():
+    server.request_update_bike(condicao_campo.get(),
+                                 cor_campo.get(),
+                                 idbike_campo.get())
+
+    limpar_entry()
+    mostrar_tela_entrada()
     messagebox.showinfo("Atualizada", "Bicicleta atualizado com sucesso!")
+
+def deletar_bike():
+    server.request_update_bike(condicao_campo.get(),
+                                 BikeStatus.NOT_VALID.value,
+                                 idbike_campo.get())
+
+    limpar_entry()
+    mostrar_tela_entrada()
+    messagebox.showinfo("Atualizada", "Bicicleta desvinculada com sucesso")
 
 
 
@@ -447,6 +457,7 @@ botao_cancelar = tk.Button(janela, text="Cancelar", command=mostrar_tela_inicial
 botao_cancelar_entrada_bike = tk.Button(janela, text="Cancelar", command=mostrar_tela_entrada)
 botao_registrar = tk.Button(janela, text="Registrar Movimentação", command=registrar_movimentacao)
 botao_procurar_movimentacao = tk.Button(janela, text="Procurar movimentação", command=procurar_movimentacao)
+botao_deletar_bike = tk.Button(janela, text="Deletar bike", command=deletar_bike)
 
 
 
