@@ -114,7 +114,6 @@ def mostrar_tela_entrada():
     botao_registrar.grid(row=2, column=1)
     botao_editar_cliente.grid(row=3, column=1)
     botao_editar_bike.grid(row=4, column=1)
-    #botao_deletar_user.grid(row=5, column=1)
     botao_cancelar.grid(row=6, column=1)
 
 def mostrar_tela_cadastro():
@@ -128,8 +127,6 @@ def mostrar_tela_cadastro():
     label_nome_campo.grid(row=1, column=0)
     label_rg_campo.grid(row=2, column=0)
     label_cpf_campo.grid(row=3, column=0)
-    #vcmd = (janela.register(on_validate), '%P')
-    #data_nascimento_campo.config(validate='key', validatecommand=vcmd)
     label_data_nascimento_campo.grid(row=4, column=0)
     label_telefone_campo.grid(row=5, column=0)
     label_email_campo.grid(row=6, column=0)
@@ -204,7 +201,8 @@ def mostrar_tela_editar_cliente(cliente):
         email_campo.insert(0, cliente[5])
         endereco_campo.insert(0, cliente[6])
 
-    botao_cancelar_entrada_bike.grid(row=6, column=3)
+    botao_update_cliente.grid(row=8, column=3)
+    botao_cancelar_entrada_bike.grid(row=9, column=3)
 
 
 def mostrar_tela_editar_bike(bike):
@@ -254,17 +252,17 @@ def update_cliente():
 def update_bike():
     pass
 
-def validar_data(data):
-    padrao = re.compile(r"^\d{2}/\d{2}/\d{4}$")
-    return padrao.match(data) is not None
+# def validar_data(data):
+#     padrao = re.compile(r"^\d{2}/\d{2}/\d{4}$")
+#     return padrao.match(data) is not None
 
-def on_validate(P):
-    if validar_data(P):
-        return True
-    elif P == "":
-        return True
-    else:
-        return False
+# def on_validate(P):
+#     if validar_data(P):
+#         return True
+#     elif P == "":
+#         return True
+#     else:
+#         return False
 
 def limpar_botoes():
     botao_entrada.grid_forget()
@@ -277,6 +275,8 @@ def limpar_botoes():
     botao_cancelar.grid_forget()
     botao_cancelar_entrada_bike.grid_forget()
     botao_registrar.grid_forget()
+    botao_update_cliente.grid_forget()
+    botao_update_bike.grid_forget()
     #botao_deletar_user.grid_forget()
     #botao_deletar_bike.grid_forget()
     nome_campo.grid_forget()
@@ -309,8 +309,7 @@ def limpar_botoes():
     cliente_combo.grid_forget()
     bike_combo.grid_forget()
     label_bike_info.grid_forget()
-    botao_editar_bike.grid_forget()
-    botao_editar_cliente.grid_forget()
+    
 
 def limpar_entry():
     nome_campo.delete(0, tk.END)
@@ -369,6 +368,7 @@ botao_cadastrar_bike = tk.Button(janela, text="Cadastrar", command=cadastrar_bik
 botao_cancelar = tk.Button(janela, text="Cancelar", command=mostrar_tela_inicial)
 botao_cancelar_entrada_bike = tk.Button(janela, text="Cancelar", command=mostrar_tela_entrada)
 botao_registrar = tk.Button(janela, text="Registrar", command=registrar_movimentacao)
+
 
 
 # Label nomeia os campos de entrada "Entry"
