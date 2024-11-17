@@ -463,6 +463,7 @@ label_movimentacao_info = tk.Label(janela, text="")
 
 
 
+
 # Campos de entrada (inputs)
 nome_campo = Entry(janela)
 rg_campo = Entry(janela)

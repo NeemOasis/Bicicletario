@@ -110,7 +110,7 @@ def request_select_client(cpf):
                             data_nascimento=result[6])
             clients.append(client)
         
-        return clients
+        return clients 
 
 
 def request_update_bike(condition, status, id_bike):
