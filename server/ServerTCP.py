@@ -20,7 +20,7 @@ def read_json(data):
         address = data["data"]["street"] or None
         date = data["data"]["date"] or None
 
-        sql.insert_client(name, cpf, rg, email, telephone, address, date)
+        sql.insert_client(name, rg, cpf, email, telephone, address, date)
 
         return None
 

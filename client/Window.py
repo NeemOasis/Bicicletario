@@ -1,5 +1,6 @@
 import tkinter as tk
 import json
+import re
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
@@ -20,16 +21,83 @@ def mostrar_tela_inicial():
     botao_retirada.grid()
     
 
+def formatar_data(event):
+    conteudo = data_nascimento_campo.get()
+    if len(conteudo) == 2 or len(conteudo) == 5:
+        data_nascimento_campo.insert(tk.END, '/')
+    elif len(conteudo) > 10:
+        data_nascimento_campo.delete(10, tk.END)
+
+def formatar_cpf(event):  
+    conteudo = cpf_campo.get().replace('.', '').replace('-', '')
+    if len(conteudo) > 11:
+        conteudo = conteudo[:11]
+    novo_conteudo = ''
+    for i, char in enumerate(conteudo):
+        if i in [3, 6]:
+            novo_conteudo += '.'
+        elif i == 9:
+            novo_conteudo += '-'
+        novo_conteudo += char
+
+    cpf_campo.delete(0, tk.END)
+    cpf_campo.insert(0, novo_conteudo)
+
+
+def formatar_rg(event):
+    conteudo = rg_campo.get().replace('.', '').replace('-', '')
+    if len(conteudo) > 9:
+        conteudo = conteudo[:9]
+    novo_conteudo = ''
+    for i, char in enumerate(conteudo):
+        if i in [2, 5]:
+            novo_conteudo += '.'
+        elif i == 8:
+            novo_conteudo += '-'
+        novo_conteudo += char
+
+    rg_campo.delete(0, tk.END)
+    rg_campo.insert(0, novo_conteudo)
+
+def formatar_telefone(event):
+    conteudo = telefone_campo.get().replace('(', '').replace(')', '').replace(' ', '').replace('-', '')
+    if len(conteudo) > 11:
+        conteudo = conteudo[:11]
+    novo_conteudo = ''
+    for i, char in enumerate(conteudo):
+        if i == 0:
+            novo_conteudo += '('
+        elif i == 2:
+            novo_conteudo += ') '
+        elif i == 7:
+            novo_conteudo += '-'
+        novo_conteudo += char
+
+    telefone_campo.delete(0, tk.END)
+    telefone_campo.insert(0, novo_conteudo)
+
+
 def cadastrar_cliente():
     ## cadastrar
     name = str(nome_campo.get())
-    server.request_insert_client(name,
-                                 cpf_campo.get(),
-                                 rg_campo.get(),
-                                 email_campo.get(),
-                                 telefone_campo.get(),
-                                 endereco_campo.get(),
-                                 data_nascimento_campo.get())
+    cpf = cpf_campo.get()
+    rg = rg_campo.get()
+    email = email_campo.get()
+    telefone = telefone_campo.get()
+    endereco = endereco_campo.get()
+    data_nascimento_str = data_nascimento_campo.get()
+    cpf = re.sub(r'\D', '', cpf)
+    rg = re.sub(r'\D', '', rg)
+    telefone = re.sub(r'\D', '', telefone)
+
+    
+    try:
+        data_nascimento = datetime.strptime(data_nascimento_str, "%d/%m/%Y")
+        data_nascimento_sql = data_nascimento.strftime("%Y-%m-%d")
+    except ValueError:
+        messagebox.showerror("Erro", "Formato de data inválido. Use dd/mm/yyyy.")
+        return
+    server.request_insert_client(name, cpf, rg, email, telefone, endereco, data_nascimento_sql)
 
     limpar_entry()
     mostrar_tela_entrada()
@@ -93,6 +161,7 @@ def select_client_combo(event):
 
     bike_search_database()
 
+
 def select_bike_combo(event):
     info = bike_combo.get()
 
@@ -125,6 +194,8 @@ def mostrar_tela_entrada():
     botao_editar_bike.grid(row=4, column=1)
     botao_cancelar.grid(row=6, column=1)
 
+    limpar_entry()
+
 def mostrar_tela_cadastro():
     # ... Esconde widgets da tela de login ...
     limpar_botoes()
@@ -150,6 +221,12 @@ def mostrar_tela_cadastro():
     email_campo.grid(row=6, column=1)
     endereco_campo.grid(row=7, column=1)
 
+    data_nascimento_campo.bind('<KeyRelease>', formatar_data)
+    cpf_campo.bind('<KeyRelease>', formatar_cpf)
+    rg_campo.bind('<KeyRelease>', formatar_rg)
+    telefone_campo.bind('<KeyRelease>', formatar_telefone)
+
+    limpar_entry()
 
 def mostrar_tela_bike():
     limpar_botoes()
@@ -382,6 +459,8 @@ def limpar_botoes():
     botao_editar_cliente.grid_forget()
     idbike_campo.grid_forget()
     botao_deletar_bike.grid_forget()
+    botao_procurar_movimentacao.grid_forget()
+    label_movimentacao_info.grid_forget()
 
 
 def limpar_entry():
@@ -400,6 +479,9 @@ def limpar_entry():
     status_campo.delete(0, tk.END)
     submeter_retirada_campo.delete(0, tk.END)
     idbike_campo.delete(0, tk.END)
+    cliente_combo.set('')
+    bike_combo.set('')
+
 
 def centralizar_janela(janela):
     janela.update_idletasks()
